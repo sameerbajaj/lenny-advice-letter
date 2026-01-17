@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  basePath: "/tools/timecapsule",
+  basePath: "/tools/time-capsule",
   output: "standalone",
 };
 
