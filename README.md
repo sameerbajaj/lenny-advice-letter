@@ -1,103 +1,68 @@
-# Lenny Advice Letter ⏳
+# Time Capsule ⏳
 
-> **Get a personal letter from product leaders who were in your exact situation.**
+> Get a personal letter from product leaders who were in your exact situation
 
-Built on top of [Lenny's Podcast Transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts) — 269 episodes of world-class product and growth advice.
+A beautiful web app that generates personalized advice letters using wisdom from 269 episodes of Lenny's Podcast. Uses AI to match your career situation with relevant insights from guests like Brian Chesky, Julie Zhuo, Shreyas Doshi, and more.
 
-## ✨ What is this?
+## ✨ Features
 
-You tell us where you are in your career. We find leaders from Lenny's Podcast who were in that same spot years ago. Then we generate a personalized letter with their hard-won wisdom — like advice from your future self.
-
-**Featured guests include:**
-- Brian Chesky (Airbnb)
-- Julie Zhuo (Facebook Design)
-- Shreyas Doshi (Stripe, Twitter)
-- Claire Hughes Johnson (Stripe)
-- And 265+ more...
+- **Sentence-builder input** - Low friction, 3 taps to describe your situation
+- **AI-powered letter generation** - Uses Gemini to find relevant quotes from real podcast transcripts
+- **Beautiful, paper-like design** - Warm, nostalgic aesthetic perfect for sharing
+- **Shareable results** - One-click share to Twitter/X with pre-filled text
 
 ## 🚀 Quick Start
 
-### 1. Clone this repo
-
-```bash
-git clone https://github.com/sameerbajaj/lenny-advice-letter.git
-cd lenny-advice-letter
-```
-
-### 2. Clone the transcript data
-
-```bash
-git clone https://github.com/ChatPRD/lennys-podcast-transcripts.git data
-```
-
-### 3. Install dependencies
+1. Clone the repo and install dependencies:
 
 ```bash
 cd app
 npm install
 ```
 
-### 4. Add your Gemini API key
-
-Create a file called `.env.local` in the `app/` folder:
+2. Add your Gemini API key to `.env.local`:
 
 ```bash
-# app/.env.local
-GEMINI_API_KEY=your_actual_api_key_here
+# Get your free key from https://aistudio.google.com/apikey
+GEMINI_API_KEY=your_key_here
 ```
 
-**Get your free API key:** https://aistudio.google.com/apikey
-
-### 5. Run the dev server
+3. Run the development server:
 
 ```bash
 npm run dev
 ```
 
-### 6. Open the app
-
-Go to: http://localhost:3000/tools/timecapsule
-
----
+4. Open [http://localhost:3000/tools/timecapsule](http://localhost:3000/tools/timecapsule)
 
 ## 🛠️ Tech Stack
 
-- **Next.js 16** — App Router, API Routes
-- **TypeScript** — Type safety
-- **Tailwind CSS** — Styling
-- **Framer Motion** — Beautiful animations
-- **Google Gemini 2.0 Flash** — AI letter generation
+- **Next.js 16** - App Router, API Routes
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Styling
+- **Framer Motion** - Animations
+- **Google Gemini** - AI letter generation
+- **gray-matter** - Transcript parsing
 
-## 📦 Project Structure
+## 📦 Deployment
 
-```
-lenny-advice-letter/
-├── app/                    # Next.js application
-│   ├── app/
-│   │   ├── api/generate/   # Gemini API route
-│   │   ├── page.tsx        # Main page
-│   │   └── globals.css     # Styles
-│   ├── components/         # React components
-│   ├── types/              # TypeScript types
-│   └── .env.local          # Your API key (create this!)
-└── data/                   # Podcast transcripts (clone separately)
+This app is designed to be hosted at a subpath (e.g., `sameerbajaj.com/tools/timecapsule`).
+
+Deploy to Vercel:
+
+```bash
+vercel
 ```
 
-## 🚢 Deployment (Vercel)
+Make sure to:
+1. Set `GEMINI_API_KEY` in Vercel environment variables
+2. Configure rewrites if hosting at a subpath
 
-1. Push to GitHub
-2. Import to Vercel
-3. Set environment variable: `GEMINI_API_KEY`
-4. Deploy!
+## 📚 Based On
 
----
-
-## 🙏 Credits
-
-- **Transcript Data:** [ChatPRD/lennys-podcast-transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts)
-- **Original Content:** [Lenny's Podcast](https://www.lennyspodcast.com/)
-- **Inspiration:** The incredible product community
+- [Lenny's Podcast Transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts) - 269 podcast episodes
+- [Lenny's Podcast](https://www.lennyspodcast.com/) - The original content
 
 ## 📝 License
 
-MIT — Built with ❤️ for the product community
+MIT - Built with ❤️ for the product community

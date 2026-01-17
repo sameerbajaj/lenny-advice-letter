@@ -20,7 +20,7 @@ async function loadRelevantTranscripts(
     situation: string,
     struggle: string
 ): Promise<TranscriptData[]> {
-    const episodesDir = path.join(process.cwd(), "..", "data", "episodes");
+    const episodesDir = path.join(process.cwd(), "data", "episodes");
     const transcripts: TranscriptData[] = [];
 
     // Priority guests known for relevant advice
