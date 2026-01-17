@@ -207,7 +207,7 @@ Return your response as valid JSON in this exact format:
 
 Make the letter feel personal, warm, and like genuine wisdom from people who've been there. The quotes should hit hard emotionally.`;
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 
         const result = await model.generateContent(prompt);
         const response = await result.response;
