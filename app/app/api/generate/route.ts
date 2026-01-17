@@ -162,61 +162,68 @@ export async function POST(request: NextRequest) {
             return acc;
         }, {} as Record<string, { title: string; url?: string }>);
 
-        const prompt = `You are creating a deeply personal, inspiring letter for someone in tech/product.
+        const prompt = `You are creating a deeply personal, practical letter for someone in tech/product. Your job is to find the MOST RELEVANT advice for their SPECIFIC situation.
 
-USER CONTEXT:
-- Role: ${role}
-- Current situation: ${situation}
-- What they're struggling with: ${struggle}
+USER'S EXACT SITUATION:
+- They are a: ${role}
+- What's happening: ${situation}  
+- Their core struggle: ${struggle}
+
+CRITICAL: The advice MUST be specific to someone who is "${situation}" and struggling with "${struggle}". 
+Do NOT give generic leadership advice. Find quotes that DIRECTLY address their exact situation.
 
 AVAILABLE EPISODES (use these exact URLs):
 ${JSON.stringify(episodeMap, null, 2)}
 
-TRANSCRIPT EXCERPTS FROM LENNY'S PODCAST:
+TRANSCRIPT EXCERPTS:
 ${transcriptContext}
 
 YOUR TASK:
-Create a personalized letter that feels like it was written by their future self, using REAL quotes and wisdom from the podcast guests above.
+Find 4-5 quotes from the transcripts that speak DIRECTLY to this person's exact situation. Each quote should feel like it was said specifically for them.
 
-REQUIREMENTS:
-1. Find 4-5 quotes from DIFFERENT guests that speak DIRECTLY to their situation and struggle
-2. Each quote should be an actual excerpt from the transcripts (look for powerful, emotionally resonant statements)
-3. Provide context for each quote (e.g., "When Julie first became a design manager at 25")
-4. The opening should address them naturally based on their inputs (NOT "to the founder who just am looking" - use proper grammar!)
-5. The closing should be encouraging and forward-looking
-6. Include the episode title and YouTube URL for EACH quote
+FOR EACH QUOTE, YOU MUST PROVIDE:
+1. "takeaway" - A practical, actionable one-sentence intro that explains HOW this advice applies to their situation. This is the key insight they should take away. Write it like advice, starting with action words.
+   Example: "Stop trying to prove yourself through doing — your value now comes from enabling others."
+   Example: "The anxiety you feel about not knowing everything is actually a sign you're in the right role."
+   
+2. "text" - The actual quote from the transcript (1-3 sentences, powerful and emotional)
 
-GRAMMAR RULES FOR THE LETTER:
-- If their situation is "am looking for product-market fit", write "To the founder searching for product-market fit" 
-- If their situation is "started building (year 0-1)", write "To the founder in year zero"
-- Always rephrase to sound natural and grammatically correct
+3. "guest" - The guest's name
 
-IMPORTANT: Only use quotes that actually appear in the transcripts. Do not make up quotes.
+4. "context" - Brief context about when/why they said this (e.g., "Reflecting on her first year as a VP")
 
-Return your response as valid JSON in this exact format:
+PERSONALIZATION RULES:
+- For "became a senior PM": Find advice about the transition from IC to senior, dealing with ambiguity, influencing without authority
+- For "first leadership role": Find advice about letting go of doing, developing others, the identity shift
+- For "shipped something that flopped": Find advice about failure, learning, resilience, not tying identity to outcomes
+- For "finding product-market fit": Find advice about iteration, customer obsession, knowing when to pivot
+- For "hitting a growth ceiling": Find advice about scaling, systems thinking, hiring, delegation
+
+The takeaways should read like a PRACTICAL GUIDE building on each other.
+
+GRAMMAR: 
+- Address line should be natural: "To the PM stepping into senior leadership" NOT "To the PM who just became a senior PM"
+- Rephrase awkward situations naturally
+
+Return valid JSON:
 {
-  "opening": "A 2-3 sentence opening that acknowledges their situation and struggle with empathy. Use natural, grammatically correct phrasing.",
-  "addressLine": "A natural, grammatically correct way to address them, e.g., 'To the founder searching for product-market fit'",
+  "addressLine": "Natural, grammatically correct greeting",
+  "opening": "2-3 sentences acknowledging their exact situation with empathy. Show you understand the specific challenge.",
   "quotes": [
     {
-      "text": "The actual quote from the transcript (1-3 sentences max)",
+      "takeaway": "One actionable sentence explaining why this matters for THEIR situation",
+      "text": "The actual quote from transcript",
       "guest": "Guest Name",
-      "context": "When/where they said this or what they were going through at the time",
-      "episodeTitle": "The episode title",
-      "episodeUrl": "The YouTube URL for this episode"
+      "context": "When/why they said this",
+      "episodeTitle": "Episode title",
+      "episodeUrl": "YouTube URL"
     }
   ],
-  "closing": "A brief, encouraging closing (2-3 sentences). End with something like 'Keep going.' or 'Keep building.'",
-  "episodeLinks": [
-    {
-      "guest": "Guest Name",
-      "title": "Episode title",
-      "url": "YouTube URL"
-    }
-  ]
+  "closing": "Encouraging 2-3 sentence close. Make it forward-looking and practical.",
+  "episodeLinks": [{"guest": "Name", "title": "Title", "url": "URL"}]
 }
 
-Make the letter feel personal, warm, and like genuine wisdom from people who've been there. The quotes should hit hard emotionally. Include 4-5 quotes.`;
+The letter should feel like a practical roadmap, not just inspirational quotes. Each takeaway builds toward actionable wisdom.`;
 
         const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 

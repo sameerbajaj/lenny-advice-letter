@@ -8,6 +8,7 @@ export interface Quote {
     text: string;
     guest: string;
     context: string;
+    takeaway: string; // Actionable one-liner explaining WHY this quote applies
     episodeTitle?: string;
     episodeUrl?: string;
 }

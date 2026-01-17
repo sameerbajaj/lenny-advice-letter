@@ -37,6 +37,16 @@ export default function LetterDisplay({
         return `To the ${role} navigating ${situation}`;
     };
 
+    // Get list of unique guest names for the share
+    const getGuestNames = () => {
+        const guests = letter.quotes.map(q => q.guest);
+        const unique = [...new Set(guests)];
+        if (unique.length <= 2) {
+            return unique.join(" and ");
+        }
+        return unique.slice(0, -1).join(", ") + ", and " + unique[unique.length - 1];
+    };
+
     const handleCopy = async () => {
         const textContent = `
 Lenny's Time Capsule Letter
@@ -47,11 +57,13 @@ ${letter.opening}
 
 ${letter.quotes
                 .map(
-                    (q) => `"${q.text}"
+                    (q) => `💡 ${q.takeaway || ""}
+
+"${q.text}"
 — ${q.guest}
 ${q.context}${q.episodeUrl ? `\n🎧 ${q.episodeUrl}` : ""}`
                 )
-                .join("\n\n")}
+                .join("\n\n---\n\n")}
 
 ${letter.closing}
 
@@ -68,18 +80,8 @@ Get your letter: sameerbajaj.com/tools/timecapsule
     };
 
     const handleShare = () => {
-        // Get the best quote (first one)
-        const bestQuote = letter.quotes[0];
-        const shortQuote = bestQuote?.text.length > 120
-            ? bestQuote.text.slice(0, 117) + "..."
-            : bestQuote?.text;
-
-        const tweetText = `I'm a ${userInput.role} ${userInput.situation} — just got my Lenny's Time Capsule letter.
-
-"${shortQuote}"
-— ${bestQuote?.guest}
-
-Advice from leaders who've been exactly where I am 🎯`;
+        // Simple, compelling share: just list the impressive guests
+        const tweetText = `My personalized Lenny's Time Capsule letter includes advice from ${getGuestNames()} 📨`;
 
         const url = "https://sameerbajaj.com/tools/timecapsule";
         const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(url)}`;
@@ -123,7 +125,7 @@ Advice from leaders who've been exactly where I am 🎯`;
                     <p className="text-[var(--color-ink-light)]">{letter.opening}</p>
                 </motion.div>
 
-                {/* Quotes */}
+                {/* Quotes with Takeaways */}
                 <div className="space-y-8 mb-8">
                     {letter.quotes.map((quote, index) => (
                         <motion.div
@@ -133,9 +135,19 @@ Advice from leaders who've been exactly where I am 🎯`;
                             transition={{ delay: 0.4 + index * 0.12 }}
                             className="quote-block"
                         >
-                            <p className="text-lg md:text-xl font-serif text-[var(--color-ink)] mb-3">
+                            {/* Takeaway - The actionable insight */}
+                            {quote.takeaway && (
+                                <p className="text-[var(--color-ink)] font-medium mb-3 text-base">
+                                    💡 {quote.takeaway}
+                                </p>
+                            )}
+
+                            {/* The Quote */}
+                            <p className="text-lg md:text-xl font-serif text-[var(--color-ink)] mb-3 opacity-90">
                                 &ldquo;{quote.text}&rdquo;
                             </p>
+
+                            {/* Attribution */}
                             <div className="flex flex-wrap items-center gap-2">
                                 <span className="text-[var(--color-accent)] font-semibold">
                                     — {quote.guest}
@@ -151,6 +163,8 @@ Advice from leaders who've been exactly where I am 🎯`;
                                     </a>
                                 )}
                             </div>
+
+                            {/* Context */}
                             <p className="text-sm text-[var(--color-ink-light)] italic mt-1">
                                 {quote.context}
                             </p>
@@ -195,7 +209,7 @@ Advice from leaders who've been exactly where I am 🎯`;
                     {copied ? "✓ Copied!" : "📋 Copy Letter"}
                 </button>
                 <button onClick={handleShare} className="btn-primary">
-                    🐦 Share on X
+                    𝕏 Share on X
                 </button>
             </motion.div>
 
