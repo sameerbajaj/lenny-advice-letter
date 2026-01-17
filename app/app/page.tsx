@@ -58,10 +58,19 @@ export default function Home() {
         >
           <div className="text-5xl mb-4">📨</div>
           <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-ink)] mb-3 text-balance">
-            Time Capsule
+            Lenny&apos;s Time Capsule
           </h1>
           <p className="text-[var(--color-ink-light)] text-lg text-balance">
-            Get a letter from product leaders who were in your exact situation
+            Get a personal letter from leaders featured on{" "}
+            <a
+              href="https://www.lennyspodcast.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--color-accent)] hover:underline"
+            >
+              Lenny&apos;s Podcast
+            </a>{" "}
+            who were in your exact situation
           </p>
         </motion.div>
 

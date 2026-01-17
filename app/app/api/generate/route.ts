@@ -11,6 +11,7 @@ interface TranscriptData {
     title: string;
     content: string;
     keywords?: string[];
+    youtubeUrl?: string;
 }
 
 // Load a sample of relevant transcripts based on user input
@@ -115,6 +116,7 @@ async function loadRelevantTranscripts(
                     title: data.title || "",
                     content: content.slice(0, 15000), // Limit content size
                     keywords: data.keywords,
+                    youtubeUrl: data.youtube_url,
                 });
             }
         }
@@ -146,20 +148,29 @@ export async function POST(request: NextRequest) {
         // Load relevant transcripts
         const transcripts = await loadRelevantTranscripts(role, situation, struggle);
 
-        // Build context from transcripts
+        // Build context from transcripts with episode URLs
         const transcriptContext = transcripts
             .map(
                 (t) =>
-                    `=== ${t.guest} - ${t.title} ===\n${t.content}\n`
+                    `=== ${t.guest} - "${t.title}" ===\nEpisode URL: ${t.youtubeUrl || "N/A"}\n${t.content}\n`
             )
             .join("\n\n");
+
+        // Build a map of guest to episode info for the AI to reference
+        const episodeMap = transcripts.reduce((acc, t) => {
+            acc[t.guest] = { title: t.title, url: t.youtubeUrl };
+            return acc;
+        }, {} as Record<string, { title: string; url?: string }>);
 
         const prompt = `You are creating a deeply personal, inspiring letter for someone in tech/product.
 
 USER CONTEXT:
 - Role: ${role}
-- Current situation: They just ${situation}
+- Current situation: ${situation}
 - What they're struggling with: ${struggle}
+
+AVAILABLE EPISODES (use these exact URLs):
+${JSON.stringify(episodeMap, null, 2)}
 
 TRANSCRIPT EXCERPTS FROM LENNY'S PODCAST:
 ${transcriptContext}
@@ -168,44 +179,44 @@ YOUR TASK:
 Create a personalized letter that feels like it was written by their future self, using REAL quotes and wisdom from the podcast guests above.
 
 REQUIREMENTS:
-1. Find 3 quotes from DIFFERENT guests that speak DIRECTLY to their situation and struggle
+1. Find 4-5 quotes from DIFFERENT guests that speak DIRECTLY to their situation and struggle
 2. Each quote should be an actual excerpt from the transcripts (look for powerful, emotionally resonant statements)
-3. Provide context for each quote (e.g., "When she first became a design manager at 24")
-4. The opening should acknowledge their exact situation with empathy
+3. Provide context for each quote (e.g., "When Julie first became a design manager at 25")
+4. The opening should address them naturally based on their inputs (NOT "to the founder who just am looking" - use proper grammar!)
 5. The closing should be encouraging and forward-looking
+6. Include the episode title and YouTube URL for EACH quote
+
+GRAMMAR RULES FOR THE LETTER:
+- If their situation is "am looking for product-market fit", write "To the founder searching for product-market fit" 
+- If their situation is "started building (year 0-1)", write "To the founder in year zero"
+- Always rephrase to sound natural and grammatically correct
 
 IMPORTANT: Only use quotes that actually appear in the transcripts. Do not make up quotes.
 
 Return your response as valid JSON in this exact format:
 {
-  "opening": "A 2-3 sentence opening that acknowledges their situation and struggle with empathy. Reference that you found leaders who were in their exact shoes.",
+  "opening": "A 2-3 sentence opening that acknowledges their situation and struggle with empathy. Use natural, grammatically correct phrasing.",
+  "addressLine": "A natural, grammatically correct way to address them, e.g., 'To the founder searching for product-market fit'",
   "quotes": [
     {
       "text": "The actual quote from the transcript (1-3 sentences max)",
       "guest": "Guest Name",
-      "context": "When/where they said this or what they were going through at the time"
-    },
-    {
-      "text": "Second quote",
-      "guest": "Guest Name",
-      "context": "Context for this quote"
-    },
-    {
-      "text": "Third quote",
-      "guest": "Guest Name",
-      "context": "Context for this quote"
+      "context": "When/where they said this or what they were going through at the time",
+      "episodeTitle": "The episode title",
+      "episodeUrl": "The YouTube URL for this episode"
     }
   ],
   "closing": "A brief, encouraging closing (2-3 sentences). End with something like 'Keep going.' or 'Keep building.'",
   "episodeLinks": [
     {
       "guest": "Guest Name",
-      "title": "Episode title"
+      "title": "Episode title",
+      "url": "YouTube URL"
     }
   ]
 }
 
-Make the letter feel personal, warm, and like genuine wisdom from people who've been there. The quotes should hit hard emotionally.`;
+Make the letter feel personal, warm, and like genuine wisdom from people who've been there. The quotes should hit hard emotionally. Include 4-5 quotes.`;
 
         const model = genAI.getGenerativeModel({ model: "gemini-3-flash-preview" });
 

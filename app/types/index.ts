@@ -8,11 +8,13 @@ export interface Quote {
     text: string;
     guest: string;
     context: string;
-    episode?: string;
+    episodeTitle?: string;
+    episodeUrl?: string;
 }
 
 export interface LetterResponse {
     opening: string;
+    addressLine?: string;
     quotes: Quote[];
     closing: string;
     episodeLinks: {

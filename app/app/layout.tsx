@@ -8,17 +8,17 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Time Capsule | Advice from Product Leaders",
-  description: "Get a personalized letter from product leaders who were in your exact situation. Based on 269 episodes of Lenny's Podcast.",
+  title: "Lenny's Time Capsule | Advice from Product Leaders",
+  description: "Get a personalized letter from leaders featured on Lenny's Podcast who were in your exact situation. Wisdom from Brian Chesky, Julie Zhuo, Shreyas Doshi, and 265+ more.",
   openGraph: {
-    title: "Time Capsule | Advice from Product Leaders",
-    description: "Get a personalized letter from product leaders who were in your exact situation.",
+    title: "Lenny's Time Capsule | Advice from Product Leaders",
+    description: "Get a personalized letter from leaders featured on Lenny's Podcast who were in your exact situation.",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Time Capsule | Advice from Product Leaders",
-    description: "Get a personalized letter from product leaders who were in your exact situation.",
+    title: "Lenny's Time Capsule",
+    description: "Get a personalized letter from leaders featured on Lenny's Podcast who were in your exact situation.",
   },
 };
 
