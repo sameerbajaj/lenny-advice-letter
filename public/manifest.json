@@ -1,0 +1,44 @@
+{
+    "name": "Lenny's Time Capsule",
+    "short_name": "Time Capsule",
+    "description": "Get a personalized letter from leaders featured on Lenny's Podcast who were in your exact situation.",
+    "start_url": "/tools/timecapsule/",
+    "scope": "/tools/timecapsule/",
+    "display": "standalone",
+    "background_color": "#faf8f5",
+    "theme_color": "#b8860b",
+    "icons": [
+        {
+            "src": "/tools/timecapsule/icons/icon-16.png",
+            "sizes": "16x16",
+            "type": "image/png"
+        },
+        {
+            "src": "/tools/timecapsule/icons/icon-32.png",
+            "sizes": "32x32",
+            "type": "image/png"
+        },
+        {
+            "src": "/tools/timecapsule/icons/icon-48.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "/tools/timecapsule/icons/icon-96.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "/tools/timecapsule/icons/icon-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/tools/timecapsule/icons/icon-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

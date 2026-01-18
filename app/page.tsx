@@ -56,7 +56,15 @@ export default function Home() {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="text-5xl mb-4">📨</div>
+          <div className="flex justify-center mb-4">
+            <img
+              src="/tools/timecapsule/icons/icon-96.png"
+              alt="Lenny's Time Capsule"
+              width={80}
+              height={80}
+              className="drop-shadow-lg"
+            />
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-[var(--color-ink)] mb-3 text-balance">
             Lenny&apos;s Time Capsule
           </h1>
