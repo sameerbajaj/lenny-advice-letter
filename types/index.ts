@@ -25,6 +25,7 @@ export interface LetterResponse {
     }[];
 }
 
+// Legacy exports for backwards compatibility (now defined in SentenceBuilder component)
 export const ROLES = [
     { value: "pm", label: "PM" },
     { value: "founder", label: "Founder" },
