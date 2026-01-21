@@ -143,7 +143,7 @@ export default function Home() {
           transition={{ delay: 0.5 }}
           className="text-center mt-12 text-sm text-[var(--color-ink-light)]"
         >
-          Based on 269 episodes of{" "}
+          Based on 303 episodes of{" "}
           <a
             href="https://www.lennyspodcast.com/"
             target="_blank"

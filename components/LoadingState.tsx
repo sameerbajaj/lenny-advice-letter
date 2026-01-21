@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 const LOADING_MESSAGES = [
-    "Searching 269 episodes...",
+    "Searching 303 episodes...",
     "Finding leaders who were in your shoes...",
     "Reading their stories...",
     "Gathering their hard-won wisdom...",

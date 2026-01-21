@@ -2,7 +2,7 @@
 
 > Get a personal letter from product leaders who were in your exact situation
 
-A beautiful web app that generates personalized advice letters using wisdom from 269 episodes of Lenny's Podcast. Uses AI to match your career situation with relevant insights from guests like Brian Chesky, Julie Zhuo, Shreyas Doshi, and more.
+A beautiful web app that generates personalized advice letters using wisdom from 303 episodes of Lenny's Podcast. Uses AI to match your career situation with relevant insights from guests like Brian Chesky, Julie Zhuo, Shreyas Doshi, and more.
 
 ## ✨ Features
 
@@ -60,7 +60,7 @@ Make sure to:
 
 ## 📚 Based On
 
-- [Lenny's Podcast Transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts) - 269 podcast episodes
+- [Lenny's Podcast Transcripts](https://github.com/ChatPRD/lennys-podcast-transcripts) - 303 podcast episodes
 - [Lenny's Podcast](https://www.lennyspodcast.com/) - The original content
 
 ## 📝 License
