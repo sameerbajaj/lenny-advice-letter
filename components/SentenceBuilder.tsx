@@ -39,7 +39,7 @@ const SITUATIONS: Record<string, { value: string; label: string }[]> = {
         { value: "first-design-job", label: "started my first design job" },
         { value: "lead-designer", label: "became a lead designer" },
         { value: "design-to-pm", label: "am transitioning to product" },
-        { value: "fighting-for-seat", label: "am fighting for a seat at the table" },
+        { value: "fighting-for-seat", label: "am fighting for my seat at the table" },
         { value: "scaling-design", label: "am scaling a design team" },
     ],
     engineer: [
@@ -74,14 +74,12 @@ const SITUATIONS: Record<string, { value: string; label: string }[]> = {
 
 // Context-aware struggles based on role + situation
 const getStruggles = (role: string, situation: string): { value: string; label: string }[] => {
-    // Default struggles that apply broadly
     const universalStruggles = [
         { value: "trusting-judgment", label: "trusting my judgment" },
         { value: "imposter-syndrome", label: "feeling like I belong" },
         { value: "work-life-balance", label: "finding balance" },
     ];
 
-    // Role-specific struggles
     const roleStruggles: Record<string, { value: string; label: string }[]> = {
         pm: [
             { value: "right-calls", label: "making the right calls" },
@@ -127,7 +125,6 @@ const getStruggles = (role: string, situation: string): { value: string; label: 
         ],
     };
 
-    // Situation-specific additions
     const situationStruggles: Record<string, { value: string; label: string }[]> = {
         "shipped-flop": [{ value: "recovering", label: "recovering from failure" }],
         "burning-out": [{ value: "setting-boundaries", label: "setting boundaries" }],
@@ -140,14 +137,13 @@ const getStruggles = (role: string, situation: string): { value: string; label: 
     const roleSpecific = roleStruggles[role] || [];
     const situationSpecific = situationStruggles[situation] || [];
 
-    // Combine and dedupe
     const combined = [...roleSpecific, ...situationSpecific, ...universalStruggles];
     const seen = new Set<string>();
     return combined.filter((s) => {
         if (seen.has(s.value)) return false;
         seen.add(s.value);
         return true;
-    }).slice(0, 6); // Limit to 6 for clean UI
+    }).slice(0, 6);
 };
 
 // Chip component for selection
@@ -157,12 +153,14 @@ function SelectionChip({
     selected,
     onClick,
     disabled = false,
+    compact = false,
 }: {
     label: string;
     emoji?: string;
     selected: boolean;
     onClick: () => void;
     disabled?: boolean;
+    compact?: boolean;
 }) {
     return (
         <motion.button
@@ -171,8 +169,8 @@ function SelectionChip({
             whileHover={!disabled ? { scale: 1.02 } : undefined}
             whileTap={!disabled ? { scale: 0.98 } : undefined}
             className={`
-                px-4 py-3 rounded-xl font-medium text-sm md:text-base
-                transition-all duration-200 border-2
+                ${compact ? "px-3 py-2 text-sm" : "px-4 py-3 text-sm md:text-base"}
+                rounded-xl font-medium transition-all duration-200 border-2
                 ${selected
                     ? "bg-[var(--color-accent)] text-white border-[var(--color-accent)] shadow-md"
                     : "bg-white/80 text-[var(--color-ink)] border-[var(--color-accent)]/20 hover:border-[var(--color-accent)]/50"
@@ -180,59 +178,174 @@ function SelectionChip({
                 ${disabled ? "opacity-40 cursor-not-allowed" : "cursor-pointer"}
             `}
         >
-            {emoji && <span className="mr-2">{emoji}</span>}
+            {emoji && <span className="mr-1.5">{emoji}</span>}
             {label}
         </motion.button>
     );
 }
 
+// Beautiful inline text input with floating effect
+function InlineTextInput({
+    value,
+    onChange,
+    placeholder,
+    prefix,
+    maxLength = 100,
+    autoFocus = false,
+}: {
+    value: string;
+    onChange: (value: string) => void;
+    placeholder: string;
+    prefix?: string;
+    maxLength?: number;
+    autoFocus?: boolean;
+}) {
+    const inputRef = useRef<HTMLTextAreaElement>(null);
+
+    useEffect(() => {
+        if (autoFocus && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [autoFocus]);
+
+    return (
+        <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="relative"
+        >
+            {prefix && (
+                <span className="absolute left-4 top-3 text-[var(--color-ink-light)] text-sm pointer-events-none">
+                    {prefix}
+                </span>
+            )}
+            <textarea
+                ref={inputRef}
+                value={value}
+                onChange={(e) => onChange(e.target.value.slice(0, maxLength))}
+                placeholder={placeholder}
+                rows={2}
+                className={`
+                    w-full px-4 py-3 rounded-xl border-2 border-[var(--color-accent)]/30
+                    bg-white/95 text-[var(--color-ink)] placeholder-[var(--color-ink-light)]/50
+                    focus:border-[var(--color-accent)] focus:outline-none focus:ring-4 focus:ring-[var(--color-accent)]/10
+                    transition-all duration-200 resize-none shadow-sm
+                    text-sm md:text-base leading-relaxed
+                    ${prefix ? "pl-4" : ""}
+                `}
+                style={{
+                    paddingTop: prefix ? "2.5rem" : undefined,
+                }}
+            />
+            <div className="absolute bottom-2 right-3 text-xs text-[var(--color-ink-light)]/60">
+                {value.length}/{maxLength}
+            </div>
+        </motion.div>
+    );
+}
+
+// Mode toggle component
+function ModeToggle({
+    mode,
+    onModeChange,
+    quickLabel = "Quick select",
+    customLabel = "Write your own",
+}: {
+    mode: "quick" | "custom";
+    onModeChange: (mode: "quick" | "custom") => void;
+    quickLabel?: string;
+    customLabel?: string;
+}) {
+    return (
+        <div className="inline-flex items-center gap-1 p-1 bg-[var(--color-accent)]/5 rounded-lg mb-4">
+            <button
+                onClick={() => onModeChange("quick")}
+                className={`
+                    px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200
+                    ${mode === "quick"
+                        ? "bg-white text-[var(--color-ink)] shadow-sm"
+                        : "text-[var(--color-ink-light)] hover:text-[var(--color-ink)]"
+                    }
+                `}
+            >
+                ⚡ {quickLabel}
+            </button>
+            <button
+                onClick={() => onModeChange("custom")}
+                className={`
+                    px-3 py-1.5 rounded-md text-xs font-medium transition-all duration-200
+                    ${mode === "custom"
+                        ? "bg-white text-[var(--color-ink)] shadow-sm"
+                        : "text-[var(--color-ink-light)] hover:text-[var(--color-ink)]"
+                    }
+                `}
+            >
+                ✏️ {customLabel}
+            </button>
+        </div>
+    );
+}
+
 export default function SentenceBuilder({ onSubmit }: SentenceBuilderProps) {
     const [role, setRole] = useState("");
-    const [situation, setSituation] = useState("");
-    const [struggle, setStruggle] = useState("");
-    const [customStruggle, setCustomStruggle] = useState("");
-    const [useCustom, setUseCustom] = useState(false);
-    const customInputRef = useRef<HTMLTextAreaElement>(null);
 
-    // Reset downstream selections when upstream changes
+    // Situation state
+    const [situationMode, setSituationMode] = useState<"quick" | "custom">("quick");
+    const [situationValue, setSituationValue] = useState("");
+    const [customSituation, setCustomSituation] = useState("");
+
+    // Struggle state
+    const [struggleMode, setStruggleMode] = useState<"quick" | "custom">("quick");
+    const [struggleValue, setStruggleValue] = useState("");
+    const [customStruggle, setCustomStruggle] = useState("");
+
+    // Reset downstream when role changes
     useEffect(() => {
-        setSituation("");
-        setStruggle("");
+        setSituationMode("quick");
+        setSituationValue("");
+        setCustomSituation("");
+        setStruggleMode("quick");
+        setStruggleValue("");
         setCustomStruggle("");
-        setUseCustom(false);
     }, [role]);
 
+    // Reset struggle when situation changes
     useEffect(() => {
-        setStruggle("");
+        setStruggleMode("quick");
+        setStruggleValue("");
         setCustomStruggle("");
-        setUseCustom(false);
-    }, [situation]);
-
-    // Focus custom input when switching to custom mode
-    useEffect(() => {
-        if (useCustom && customInputRef.current) {
-            customInputRef.current.focus();
-        }
-    }, [useCustom]);
+    }, [situationValue, customSituation, situationMode]);
 
     const situations = role ? SITUATIONS[role] || [] : [];
-    const struggles = role && situation ? getStruggles(role, situation) : [];
+    const struggles = role && (situationValue || customSituation)
+        ? getStruggles(role, situationValue || "custom")
+        : [];
 
-    const finalStruggle = useCustom ? customStruggle.trim() : struggle;
-    const isComplete = role && situation && finalStruggle;
+    // Computed final values
+    const finalSituation = situationMode === "custom" ? customSituation.trim() : situationValue;
+    const finalStruggle = struggleMode === "custom" ? customStruggle.trim() : struggleValue;
+    const hasSituation = finalSituation.length > 0;
+    const hasStruggle = finalStruggle.length > 0;
+    const isComplete = role && hasSituation && hasStruggle;
+
+    // Get display labels
+    const getRoleLabel = () => ROLES.find(r => r.value === role)?.label || role;
+    const getSituationLabel = () => {
+        if (situationMode === "custom") return customSituation.trim();
+        return situations.find(s => s.value === situationValue)?.label || situationValue;
+    };
+    const getStruggleLabel = () => {
+        if (struggleMode === "custom") return customStruggle.trim();
+        return struggles.find(s => s.value === struggleValue)?.label || struggleValue;
+    };
 
     const handleSubmit = () => {
         if (isComplete) {
-            const roleLabel = ROLES.find((r) => r.value === role)?.label || role;
-            const situationLabel = situations.find((s) => s.value === situation)?.label || situation;
-            const struggleLabel = useCustom
-                ? customStruggle.trim()
-                : struggles.find((s) => s.value === struggle)?.label || struggle;
-
             onSubmit({
-                role: roleLabel,
-                situation: situationLabel,
-                struggle: struggleLabel,
+                role: getRoleLabel(),
+                situation: getSituationLabel(),
+                struggle: getStruggleLabel(),
             });
         }
     };
@@ -251,7 +364,7 @@ export default function SentenceBuilder({ onSubmit }: SentenceBuilderProps) {
                     Tell us about your situation
                 </h2>
                 <p className="text-[var(--color-ink-light)] text-sm">
-                    We'll find leaders who were in your exact shoes
+                    The more specific, the better your letter will be
                 </p>
             </motion.div>
 
@@ -263,7 +376,7 @@ export default function SentenceBuilder({ onSubmit }: SentenceBuilderProps) {
                 className="mb-8"
             >
                 <div className="flex items-center gap-2 mb-4">
-                    <span className="w-6 h-6 rounded-full bg-[var(--color-accent)] text-white text-xs font-bold flex items-center justify-center">1</span>
+                    <span className="w-6 h-6 rounded-full bg-[var(--color-accent)] text-white text-xs font-bold flex items-center justify-center shrink-0">1</span>
                     <span className="text-[var(--color-ink)] font-medium">I'm a...</span>
                 </div>
                 <div className="flex flex-wrap gap-2">
@@ -289,27 +402,57 @@ export default function SentenceBuilder({ onSubmit }: SentenceBuilderProps) {
                         transition={{ duration: 0.3 }}
                         className="mb-8 overflow-hidden"
                     >
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="w-6 h-6 rounded-full bg-[var(--color-accent)] text-white text-xs font-bold flex items-center justify-center">2</span>
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-6 h-6 rounded-full bg-[var(--color-accent)] text-white text-xs font-bold flex items-center justify-center shrink-0">2</span>
                             <span className="text-[var(--color-ink)] font-medium">who just...</span>
                         </div>
-                        <div className="flex flex-wrap gap-2">
-                            {situations.map((s) => (
-                                <SelectionChip
-                                    key={s.value}
-                                    label={s.label}
-                                    selected={situation === s.value}
-                                    onClick={() => setSituation(s.value)}
+
+                        <ModeToggle
+                            mode={situationMode}
+                            onModeChange={(mode) => {
+                                setSituationMode(mode);
+                                if (mode === "quick") setCustomSituation("");
+                                else setSituationValue("");
+                            }}
+                        />
+
+                        <AnimatePresence mode="wait">
+                            {situationMode === "quick" ? (
+                                <motion.div
+                                    key="quick-situation"
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="flex flex-wrap gap-2"
+                                >
+                                    {situations.map((s) => (
+                                        <SelectionChip
+                                            key={s.value}
+                                            label={s.label}
+                                            selected={situationValue === s.value}
+                                            onClick={() => setSituationValue(s.value)}
+                                            compact
+                                        />
+                                    ))}
+                                </motion.div>
+                            ) : (
+                                <InlineTextInput
+                                    key="custom-situation"
+                                    value={customSituation}
+                                    onChange={setCustomSituation}
+                                    placeholder="got promoted but feel unprepared... just pivoted the company... took a job that's way over my head..."
+                                    maxLength={100}
+                                    autoFocus
                                 />
-                            ))}
-                        </div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Step 3: Struggle Selection with Custom Option */}
+            {/* Step 3: Struggle Selection */}
             <AnimatePresence>
-                {situation && (
+                {hasSituation && (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: "auto" }}
@@ -317,76 +460,50 @@ export default function SentenceBuilder({ onSubmit }: SentenceBuilderProps) {
                         transition={{ duration: 0.3 }}
                         className="mb-8 overflow-hidden"
                     >
-                        <div className="flex items-center gap-2 mb-4">
-                            <span className="w-6 h-6 rounded-full bg-[var(--color-accent)] text-white text-xs font-bold flex items-center justify-center">3</span>
+                        <div className="flex items-center gap-2 mb-3">
+                            <span className="w-6 h-6 rounded-full bg-[var(--color-accent)] text-white text-xs font-bold flex items-center justify-center shrink-0">3</span>
                             <span className="text-[var(--color-ink)] font-medium">and I'm struggling with...</span>
                         </div>
 
-                        {/* Quick select chips */}
-                        <div className="flex flex-wrap gap-2 mb-4">
-                            {struggles.map((s) => (
-                                <SelectionChip
-                                    key={s.value}
-                                    label={s.label}
-                                    selected={!useCustom && struggle === s.value}
-                                    onClick={() => {
-                                        setStruggle(s.value);
-                                        setUseCustom(false);
-                                    }}
+                        <ModeToggle
+                            mode={struggleMode}
+                            onModeChange={(mode) => {
+                                setStruggleMode(mode);
+                                if (mode === "quick") setCustomStruggle("");
+                                else setStruggleValue("");
+                            }}
+                        />
+
+                        <AnimatePresence mode="wait">
+                            {struggleMode === "quick" ? (
+                                <motion.div
+                                    key="quick-struggle"
+                                    initial={{ opacity: 0, y: -10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: -10 }}
+                                    className="flex flex-wrap gap-2"
+                                >
+                                    {struggles.map((s) => (
+                                        <SelectionChip
+                                            key={s.value}
+                                            label={s.label}
+                                            selected={struggleValue === s.value}
+                                            onClick={() => setStruggleValue(s.value)}
+                                            compact
+                                        />
+                                    ))}
+                                </motion.div>
+                            ) : (
+                                <InlineTextInput
+                                    key="custom-struggle"
+                                    value={customStruggle}
+                                    onChange={setCustomStruggle}
+                                    placeholder="balancing speed with quality... feeling like everyone expects me to have answers... knowing when to push back vs. compromise..."
+                                    maxLength={150}
+                                    autoFocus
                                 />
-                            ))}
-                        </div>
-
-                        {/* Custom input option */}
-                        <div className="mt-4">
-                            <button
-                                onClick={() => {
-                                    setUseCustom(!useCustom);
-                                    setStruggle("");
-                                }}
-                                className={`
-                                    text-sm font-medium transition-colors
-                                    ${useCustom
-                                        ? "text-[var(--color-accent)]"
-                                        : "text-[var(--color-ink-light)] hover:text-[var(--color-accent)]"
-                                    }
-                                `}
-                            >
-                                ✏️ {useCustom ? "Using your own words" : "Or describe it in your own words..."}
-                            </button>
-
-                            <AnimatePresence>
-                                {useCustom && (
-                                    <motion.div
-                                        initial={{ opacity: 0, height: 0 }}
-                                        animate={{ opacity: 1, height: "auto" }}
-                                        exit={{ opacity: 0, height: 0 }}
-                                        transition={{ duration: 0.2 }}
-                                        className="mt-3"
-                                    >
-                                        <div className="relative">
-                                            <textarea
-                                                ref={customInputRef}
-                                                value={customStruggle}
-                                                onChange={(e) => setCustomStruggle(e.target.value.slice(0, 150))}
-                                                placeholder="e.g., balancing speed with quality while my team is burned out..."
-                                                rows={2}
-                                                className="
-                                                    w-full px-4 py-3 rounded-xl border-2 border-[var(--color-accent)]/30
-                                                    bg-white/90 text-[var(--color-ink)] placeholder-[var(--color-ink-light)]/60
-                                                    focus:border-[var(--color-accent)] focus:outline-none focus:ring-2 focus:ring-[var(--color-accent)]/20
-                                                    transition-all duration-200 resize-none
-                                                    text-sm md:text-base
-                                                "
-                                            />
-                                            <div className="absolute bottom-2 right-3 text-xs text-[var(--color-ink-light)]">
-                                                {customStruggle.length}/150
-                                            </div>
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 )}
             </AnimatePresence>
@@ -395,27 +512,39 @@ export default function SentenceBuilder({ onSubmit }: SentenceBuilderProps) {
             <AnimatePresence>
                 {isComplete && (
                     <motion.div
-                        initial={{ opacity: 0, y: 10 }}
+                        initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
+                        exit={{ opacity: 0, y: -20 }}
+                        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
                         className="pt-6 border-t border-[var(--color-accent)]/10"
                     >
                         {/* Preview sentence */}
-                        <div className="mb-6 p-4 rounded-xl bg-[var(--color-accent)]/5 border border-[var(--color-accent)]/10">
+                        <motion.div
+                            initial={{ scale: 0.98 }}
+                            animate={{ scale: 1 }}
+                            className="mb-6 p-5 rounded-2xl bg-gradient-to-br from-[var(--color-accent)]/5 to-[var(--color-accent)]/10 border border-[var(--color-accent)]/15"
+                        >
                             <p className="text-[var(--color-ink)] font-serif text-base md:text-lg leading-relaxed">
-                                "I'm a <strong>{ROLES.find(r => r.value === role)?.label}</strong> who just <strong>{situations.find(s => s.value === situation)?.label}</strong> and I'm struggling with <strong>{useCustom ? customStruggle.trim() : struggles.find(s => s.value === struggle)?.label}</strong>."
+                                <span className="text-[var(--color-ink-light)]">"</span>
+                                I'm a <strong className="text-[var(--color-accent)]">{getRoleLabel()}</strong> who
+                                just <strong className="text-[var(--color-accent)]">{getSituationLabel()}</strong> and
+                                I'm struggling with <strong className="text-[var(--color-accent)]">{getStruggleLabel()}</strong>.
+                                <span className="text-[var(--color-ink-light)]">"</span>
                             </p>
-                        </div>
+                        </motion.div>
 
                         <div className="text-center">
                             <motion.button
                                 onClick={handleSubmit}
-                                whileHover={{ scale: 1.02 }}
+                                whileHover={{ scale: 1.03, y: -2 }}
                                 whileTap={{ scale: 0.98 }}
-                                className="btn-primary text-lg px-10"
+                                className="btn-primary text-lg px-12 py-4 shadow-lg"
                             >
                                 ✉️ Get My Letter
                             </motion.button>
+                            <p className="text-xs text-[var(--color-ink-light)] mt-3">
+                                We'll find leaders who were in your exact shoes
+                            </p>
                         </div>
                     </motion.div>
                 )}
