@@ -73,6 +73,21 @@ export default function RootLayout({
             }}
           />
         )}
+        {/* DataFast Analytics (First-Party) */}
+        <Script
+          id="datafast-queue"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `window.datafast = window.datafast || function(){ (window.datafast.q = window.datafast.q || []).push(arguments); };`,
+          }}
+        />
+        <Script
+          id="datafast-script"
+          strategy="afterInteractive"
+          defer
+          data-site="0b4c6s4x2i3l705l"
+          src="https://sameerbajaj.com/s/m.js"
+        />
       </head>
       <body className={`${inter.variable} antialiased`}>
         {/* Google Tag Manager (noscript) */}

@@ -14,6 +14,10 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (input: UserInput) => {
+    window.datafast?.("tool_activated", {
+      tool: "timecapsule",
+      action: "generate_letter",
+    });
     setUserInput(input);
     setStep("loading");
     setError(null);
